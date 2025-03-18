@@ -32,6 +32,12 @@ const Cube = ({ size = 2 }) => {
         }
     });
 
+    // useFrame(() => {
+    //     if (cubeRef.current) {
+    //         cubeRef.current.rotation.y += 0.005;
+    //     }
+    // });
+
     const handleFaceClick = (faceIndex) => {
         setActiveFace(faceIndex);
         setCurrentFaceIndex(faceIndex);
@@ -69,12 +75,46 @@ const Cube = ({ size = 2 }) => {
 
     return (
         <animated.mesh ref={cubeRef} rotation={springRotation} onClick={(e) => { e.stopPropagation(); }}>
-            {[...Array(6)].map((_, index) => (
-                <FaceContent key={index} position={[0, 0, size/2].map((val,i) => i === 0 ? (index === 3 ? -val : index === 1 ? val : 0) : i === 1 ? (index === 4 ? val : index === 5 ? -val : 0) : index === 2 ? -val : val)}
-                rotation={[0,0,0].map((val, i) => i === 0 ? (index === 4 ? -Math.PI / 2 : index === 5 ? Math.PI / 2 : 0) : i === 1 ? (index === 1 ? Math.PI / 2 : index === 3 ? -Math.PI / 2 : index === 2 ? Math.PI : 0) : 0)}
-                size = {size} faceIndex={index} onClick={() => handleFaceClick(index)}
-                isActive={index === activeFace}/>
-            ))}
+            {[...Array(6)].map((_, index) => {
+                let position = [0, 0, 0];
+                let faceRotation = [0, 0, 0];
+                switch (index) {
+                    case 0:
+                        position = [0, 0, size/2];
+                        break;
+                    case 1:
+                        position = [size/2, 0, 0];
+                        faceRotation = [0, Math.PI / 2, 0];
+                        break;
+                    case 2:
+                        position = [0, 0, -size/2];
+                        faceRotation = [0, Math.PI, 0];
+                        break;
+                    case 3:
+                        position = [-size/2, 0, 0];
+                        faceRotation = [0, -Math.PI / 2, 0];
+                        break;
+                    case 4:
+                        position = [0, size/2, 0];
+                        faceRotation = [-Math.PI / 2, 0, 0];
+                        break;
+                    case 5:
+                        position = [0, -size/2, 0];
+                        faceRotation = [Math.PI / 2, 0, 0];
+                        break;
+                }
+                return (
+                    <FaceContent 
+                        key={index} 
+                        position={position}
+                        rotation={faceRotation}
+                        size = {size} 
+                        faceIndex={index} 
+                        onClick={() => handleFaceClick(index)}
+                        isActive={index === activeFace} 
+                    />
+                )
+            })}
         </animated.mesh>
     );
 };
